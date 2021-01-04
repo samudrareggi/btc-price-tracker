@@ -1,0 +1,15 @@
+.navbar {
+  background-color: #0f1a2a;
+  height: 7vh;
+  position: sticky;
+  top: 0;
+}
+
+.navbar-brand {
+  color: #e0e0e0;
+  cursor: pointer;
+}
+
+.logo {
+  width: 55px;
+}
