@@ -145,7 +145,7 @@ function App() {
         <div className="container">
           <div className="app">
             <div className="d-flex justify-content-center">
-              <div className="input-group mb-5 mt-5" style={{ width: "50%" }}>
+              <label className="input-group mb-5 mt-5" style={{ width: "40%" }}>
                 <span className="input-group-text">
                   <i className="fab fa-bitcoin"></i>
                 </span>
@@ -157,7 +157,7 @@ function App() {
                   defaultValue={payload.value}
                   placeholder="Input your bitcoin"
                 />
-              </div>
+              </label>
             </div>
             <div className="row">
               {
