@@ -1,0 +1,16 @@
+.navbar {
+  background-color: #0f1a2a !important;
+}
+
+.navbar-brand {
+  color: #e0e0e0 !important;
+  cursor: pointer;
+}
+
+.logo {
+  width: 30px;
+}
+
+.text {
+  color: #e0e0e0;
+}
