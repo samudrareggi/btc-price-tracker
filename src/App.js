@@ -1,15 +1,19 @@
 import "./styles/App.css";
 import React, { useState } from "react";
-import { Navbar } from "./components";
+import { Navbar, Card } from "./components";
 import { Chart } from "./components/Chart";
-import ws from './helpers/websocket'
+import { debounce } from "lodash";
+import ws from "./helpers/websocket";
 
 function App() {
   const [payload, setPayload] = useState({
-    value: '',
-    select: 'USD'
-  })
-  const [options, setOptions] = useState(['USD', 'EUR', 'GBP'])
+    value: "",
+    rate: [0,0,0]
+  });
+  const [usd, setUsd] = useState(0);
+  const [eur, setEur] = useState(0);
+  const [gbp, setGbp] = useState(0);
+
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -79,11 +83,7 @@ function App() {
       channels: [
         {
           name: "ticker",
-          product_ids: [
-            "BTC-USD",
-            "BTC-EUR",
-            "BTC-GBP",
-          ],
+          product_ids: ["BTC-EUR", "BTC-GBP", "BTC-USD"],
         },
       ],
     };
@@ -94,19 +94,31 @@ function App() {
 
     ws.onmessage = (e) => {
       const value = JSON.parse(e.data);
+      if (value.product_id === "BTC-EUR") {
+        setEur(value.price);
+      } else if (value.product_id === "BTC-USD") {
+        setUsd(value.price);
+      } else {
+        setGbp(value.price);
+      }
+
       if (value.product_id === "BTC-USD") {
         const oldBtcDataSet = chartData.datasets[0];
-        const newBtcDataSet = { ...oldBtcDataSet, data: oldBtcDataSet.data.concat(value.price) };
+        const newBtcDataSet = {
+          ...oldBtcDataSet,
+          data: oldBtcDataSet.data.concat(value.price),
+        };
 
         const oldLabel = chartData;
         const newLabel = { ...oldLabel };
         newLabel.labels.push(new Date().toLocaleTimeString());
-        
+
         const newChartData = {
           ...chartData,
           datasets: [newBtcDataSet],
           labels: newLabel.labels,
         };
+
         setChartData(newChartData);
       }
     };
@@ -115,15 +127,17 @@ function App() {
       ws.close();
     };
   }, []);
-  
-  const onChange = (e, name) => {
-    const value = {
-      ...payload,
-      [name]: e.target.value
-    }
-    setPayload(value)
+
+  const onChange = debounce((e) => {
+    const value = e.target.value;
+    const valUsd = value * usd
+    const valEur = value * eur
+    const valGbp = value * gbp
+    const result = {...payload, value: value, rate: [valUsd, valEur, valGbp]}
+
+    setPayload(result)
     console.log(value);
-  }
+  }, 500);
   return (
     <>
       <Navbar />
@@ -131,23 +145,28 @@ function App() {
         <div className="container">
           <div className="app">
             <div className="d-flex justify-content-center">
-
-            <div className="input-group mb-5 mt-5" style={{width: '50%'}}>
-            <span className="input-group-text"><i className="fab fa-bitcoin"></i></span>
-              <input type="number" className="form-control" min='0' onChange={(e) => onChange(e, 'value')} defaultValue={payload.value} placeholder="Input your bitcoin"/>
-              <select className="btn btn-outline-secondary" style={{color: '#ededed'}} onChange={(e) => onChange(e, 'select')} defaultValue={options[0]} id="inputGroupSelect01">
-                {
-                  options.map((el, i) => <option key={i} value={el}>{el}</option>)
-                }
-              </select>
+              <div className="input-group mb-5 mt-5" style={{ width: "50%" }}>
+                <span className="input-group-text">
+                  <i className="fab fa-bitcoin"></i>
+                </span>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  onChange={(e) => onChange(e, "value")}
+                  defaultValue={payload.value}
+                  placeholder="Input your bitcoin"
+                />
+              </div>
             </div>
+            <div className="row">
+              {
+                payload.value ? <Card payload={payload}/> : null
+              }
             </div>
 
-            <div className="chart-container" style={{height: 400}}>
-              <Chart
-                data={chartData}
-                options={chartOptions}
-              />
+            <div className="chart-container" style={{ height: 400 }}>
+              <Chart data={chartData} options={chartOptions} />
             </div>
           </div>
         </div>
