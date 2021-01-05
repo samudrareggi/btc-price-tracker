@@ -5,6 +5,11 @@ import { Chart } from "./components/Chart";
 import ws from './helpers/websocket'
 
 function App() {
+  const [payload, setPayload] = useState({
+    value: '',
+    select: 'USD'
+  })
+  const [options, setOptions] = useState(['USD', 'EUR', 'GBP'])
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -90,8 +95,6 @@ function App() {
     ws.onmessage = (e) => {
       const value = JSON.parse(e.data);
       if (value.product_id === "BTC-USD") {
-      
-      console.log(value);
         const oldBtcDataSet = chartData.datasets[0];
         const newBtcDataSet = { ...oldBtcDataSet, data: oldBtcDataSet.data.concat(value.price) };
 
@@ -113,13 +116,34 @@ function App() {
     };
   }, []);
   
+  const onChange = (e, name) => {
+    const value = {
+      ...payload,
+      [name]: e.target.value
+    }
+    setPayload(value)
+    console.log(value);
+  }
   return (
     <>
       <Navbar />
       <div style={{ backgroundColor: "#141f31" }}>
         <div className="container">
           <div className="app">
-            <div className="chart-container" style={{ height: 400 }}>
+            <div className="d-flex justify-content-center">
+
+            <div className="input-group mb-5 mt-5" style={{width: '50%'}}>
+            <span className="input-group-text"><i className="fab fa-bitcoin"></i></span>
+              <input type="number" className="form-control" min='0' onChange={(e) => onChange(e, 'value')} defaultValue={payload.value} placeholder="Input your bitcoin"/>
+              <select className="btn btn-outline-secondary" style={{color: '#ededed'}} onChange={(e) => onChange(e, 'select')} defaultValue={options[0]} id="inputGroupSelect01">
+                {
+                  options.map((el, i) => <option key={i} value={el}>{el}</option>)
+                }
+              </select>
+            </div>
+            </div>
+
+            <div className="chart-container" style={{height: 400}}>
               <Chart
                 data={chartData}
                 options={chartOptions}
