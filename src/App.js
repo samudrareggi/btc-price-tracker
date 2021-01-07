@@ -1,5 +1,5 @@
 import "./styles/App.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navbar, Card } from "./components";
 import { Chart } from "./components/Chart";
 import { debounce } from "lodash";
@@ -8,7 +8,7 @@ import ws from "./helpers/websocket";
 function App() {
   const [payload, setPayload] = useState({
     value: "",
-    rate: [0,0,0,14.065]
+    rate: [0,0,0,14065]
   });
   const [usd, setUsd] = useState(0);
   const [eur, setEur] = useState(0);
@@ -77,7 +77,7 @@ function App() {
     },
   });
 
-  useState(() => {
+  useEffect(() => {
     const subscribe = {
       type: "subscribe",
       channels: [
@@ -133,7 +133,9 @@ function App() {
     const valUsd = value * usd
     const valEur = value * eur
     const valGbp = value * gbp
-    const result = {...payload, value: value, rate: [valUsd, valEur, valGbp, 14.065]}
+    const valRp = value * 14065
+
+    const result = {...payload, value: value, rate: [valUsd, valEur, valGbp, valRp]}
 
     setPayload(result)
     console.log(value);
