@@ -8,7 +8,7 @@ import ws from "./helpers/websocket";
 function App() {
   const [payload, setPayload] = useState({
     value: "",
-    rate: [0,0,0]
+    rate: [0,0,0,14.065]
   });
   const [usd, setUsd] = useState(0);
   const [eur, setEur] = useState(0);
@@ -133,7 +133,7 @@ function App() {
     const valUsd = value * usd
     const valEur = value * eur
     const valGbp = value * gbp
-    const result = {...payload, value: value, rate: [valUsd, valEur, valGbp]}
+    const result = {...payload, value: value, rate: [valUsd, valEur, valGbp, 14.065]}
 
     setPayload(result)
     console.log(value);

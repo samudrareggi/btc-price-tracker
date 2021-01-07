@@ -5,11 +5,12 @@ export default function Card(props) {
     { icon: <i class="fas fa-dollar-sign"></i>, name: "USD" },
     { icon: <i class="fas fa-euro-sign"></i>, name: "EUR" },
     { icon: <i class="fas fa-pound-sign"></i>, name: "GBP" },
+    { icon: 'Rp', name: "IDR" },
   ]);
 
   return (
     <>
-      {Array(3)
+      {Array(icons.length)
         .fill()
         .map((_, index) => (
           <div class="card col mb-5" key={index} style={{ padding: 0, margin: 10, backgroundColor: '#0f1a2a' }}>
@@ -17,7 +18,7 @@ export default function Card(props) {
               <h4><i className="fab fa-bitcoin"></i> <i class="fas fa-arrow-right"></i> {icons[index]['icon']}</h4>
             </div>
             <div className="card-body text-center">
-              <h4 className="card-title">${props.payload.rate[index]}</h4>
+              <h4 className="card-title">{props.payload.rate[index]}</h4>
               <p className="card-text">{`(price in ${icons[index]['name']})`}</p>
             </div>
           </div>
